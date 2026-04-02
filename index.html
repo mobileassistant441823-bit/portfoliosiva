@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Portfolio</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── CSS VARIABLES — theme color இங்க control ஆகும் ── */
+    :root {
+      --accent:     #00ff88;
+      --accent-dim: rgba(0,255,136,.22);
+      --accent-glow:rgba(0,255,136,.12);
+      --bg1: #0a0510;
+      --bg2: #150a25;
+      --bg3: #0f0818;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body { font-family: 'Space Grotesk', sans-serif; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%); color: #fff; overflow-x: hidden; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    @keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    @keyframes spin3d    { to{transform:rotateX(360deg) rotateY(360deg)} }
+    @keyframes pulseglow { 0%,100%{box-shadow:0 0 15px color-mix(in srgb,var(--accent) 30%,transparent)} 50%{box-shadow:0 0 35px color-mix(in srgb,var(--accent) 60%,transparent)} }
+    @keyframes orbit     { 0%{transform:rotate(0deg) translateX(65px) rotate(0deg)} 100%{transform:rotate(360deg) translateX(65px) rotate(-360deg)} }
+    @keyframes spin      { to{transform:rotate(360deg)} }
+    @keyframes blink     { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .anim-float     { animation: float 6s ease-in-out infinite; }
+    .anim-spin3d    { animation: spin3d 20s linear infinite; transform-style: preserve-3d; }
+    .anim-pulse     { animation: pulseglow 3s ease-in-out infinite; }
+    .anim-orbit     { animation: orbit 10s linear infinite; }
+    .anim-orbit-rev { animation: orbit 15s linear infinite reverse; }
+
+    .cube { width:54px;height:54px;position:relative;transform-style:preserve-3d; }
+    .cf   { position:absolute;width:54px;height:54px;border:1.5px solid color-mix(in srgb,var(--accent) 50%,transparent);background:color-mix(in srgb,var(--accent) 3%,transparent); }
+    .cf.fr{transform:translateZ(27px)} .cf.bk{transform:rotateY(180deg) translateZ(27px)}
+    .cf.rt{transform:rotateY(90deg) translateZ(27px)} .cf.lt{transform:rotateY(-90deg) translateZ(27px)}
+    .sphere { border-radius:50%;background:radial-gradient(circle at 30% 30%,color-mix(in srgb,var(--accent) 35%,transparent),color-mix(in srgb,var(--accent) 4%,transparent));border:1.5px solid color-mix(in srgb,var(--accent) 50%,transparent); }
+    .ring   { border-radius:50%;border:3px solid color-mix(in srgb,var(--accent) 60%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 30%,transparent); }
+    .deco   { position:absolute;pointer-events:none;opacity:.22; }
+
+    nav { position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(8,4,18,.94);backdrop-filter:blur(14px);border-bottom:1px solid color-mix(in srgb,var(--accent) 7%,transparent); }
+    .nav-link { color:rgba(255,255,255,.5);padding:7px 13px;border-radius:8px;transition:.22s;text-decoration:none;font-size:14px;display:inline-block; }
+    .nav-link:hover { color:var(--accent);background:var(--accent-glow); }
+    .nav-btn  { display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.5);padding:7px 13px;border-radius:8px;transition:.22s;cursor:pointer;background:none;border:none;font-family:inherit;font-size:14px; }
+    .nav-btn:hover,.nav-btn.on { color:var(--accent);background:var(--accent-glow); }
+    .abadge { background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);color:var(--accent);font-size:10px;padding:2px 7px;border-radius:20px;font-family:'JetBrains Mono',monospace;display:none; }
+
+    .page { padding:0 24px;max-width:1200px;margin:0 auto; }
+    .sec  { padding:80px 0; }
+    .sec-label { font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;letter-spacing:.1em;margin-bottom:8px; }
+    .sec-title { font-size:clamp(26px,4vw,38px);font-weight:700;display:inline-block;position:relative; }
+    .sec-title::after { content:'';position:absolute;bottom:-7px;left:0;width:52px;height:3px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px; }
+
+    .card { background:linear-gradient(135deg,rgba(18,9,32,.95),rgba(30,12,50,.85));border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:16px;position:relative;transition:transform .35s cubic-bezier(.175,.885,.32,1.275),border-color .3s,box-shadow .3s; }
+    .card:hover { transform:translateY(-7px) scale(1.015);border-color:color-mix(in srgb,var(--accent) 28%,transparent);box-shadow:0 20px 44px rgba(0,0,0,.45),0 0 28px color-mix(in srgb,var(--accent) 10%,transparent); }
+    .card-body { padding:24px; }
+    .card-actions { position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:20; }
+
+    .abtn   { width:30px;height:30px;border-radius:7px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;transition:.2s; }
+    .abtn.e { background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent); }
+    .abtn.e:hover { background:color-mix(in srgb,var(--accent) 26%,transparent); }
+    .abtn.d { background:rgba(255,71,87,.12);color:#ff4757;border:1px solid rgba(255,71,87,.28); }
+    .abtn.d:hover { background:rgba(255,71,87,.26); }
+
+    .skill-pill { display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent) 4%,transparent));border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);font-size:14px;transition:.25s;position:relative; }
+    .skill-pill:hover { background:color-mix(in srgb,var(--accent) 18%,transparent);transform:translateY(-3px); }
+    .sp-actions { display:none;position:absolute;top:-10px;right:-10px;gap:4px; }
+    .skill-pill:hover .sp-actions { display:flex; }
+
+    .tl-wrap { position:relative; }
+    .tl-line { position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,var(--accent),transparent);transform:translateX(-50%); }
+    .tl-item { display:flex;align-items:flex-start;margin-bottom:40px;position:relative; }
+    .tl-item:nth-child(even) { flex-direction:row-reverse; }
+    .tl-side { width:calc(50% - 36px); }
+    .tl-dot  { width:14px;height:14px;background:var(--accent);border-radius:50%;box-shadow:0 0 18px var(--accent);position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:5;flex-shrink:0; }
+    .tl-dot::before { content:'';position:absolute;inset:-7px;border:2px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:50%;animation:pulseglow 2s ease-in-out infinite; }
+
+    .c-wrap { position:relative;display:inline-block; }
+    .c-link { display:inline-flex;align-items:center;gap:11px;padding:14px 26px;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent) 4%,transparent));border:2px solid color-mix(in srgb,var(--accent) 24%,transparent);color:var(--accent);font-weight:600;text-decoration:none;transition:.3s; }
+    .c-link:hover { background:color-mix(in srgb,var(--accent) 18%,transparent);transform:translateY(-4px) scale(1.04);box-shadow:0 14px 30px rgba(0,0,0,.4); }
+    .c-actions { position:absolute;top:-12px;right:-12px;display:none;gap:4px;z-index:20; }
+    .c-wrap:hover .c-actions { display:flex; }
+
+    .btn-prim { display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:11px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,transparent),color-mix(in srgb,var(--accent) 5%,transparent));border:2px solid color-mix(in srgb,var(--accent) 27%,transparent);color:var(--accent);font-weight:600;text-decoration:none;transition:.3s;font-family:inherit;cursor:pointer;font-size:15px; }
+    .btn-prim:hover { background:color-mix(in srgb,var(--accent) 20%,transparent);transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.4),0 0 22px color-mix(in srgb,var(--accent) 16%,transparent); }
+
+    .hero-edit { display:none;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:8px;padding:5px 11px;color:var(--accent);font-size:12px;cursor:pointer;transition:.2s;font-family:inherit; }
+    .hero-edit:hover { background:color-mix(in srgb,var(--accent) 22%,transparent); }
+
+    .modal-bg { position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .28s; }
+    .modal-bg.open { opacity:1;pointer-events:auto; }
+    .modal-box { background:linear-gradient(145deg,#160b28,#270948);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);border-radius:20px;padding:32px;width:92%;max-width:540px;max-height:90vh;overflow-y:auto;transform:scale(.9) translateY(18px);transition:.28s; }
+    .modal-bg.open .modal-box { transform:scale(1) translateY(0); }
+    .m-title { font-size:19px;font-weight:700;color:var(--accent);margin-bottom:20px; }
+
+    .f-label { color:rgba(255,255,255,.5);font-size:13px;margin-bottom:5px;display:block; }
+    .f-input { width:100%;background:rgba(0,0,0,.38);border:1px solid color-mix(in srgb,var(--accent) 17%,transparent);border-radius:9px;padding:11px 14px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;transition:.25s; }
+    .f-input:focus { outline:none;border-color:var(--accent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 12%,transparent); }
+    textarea.f-input { resize:vertical; }
+
+    .btn-g  { background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 80%,#000));color:#000;font-weight:700;padding:11px 22px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-size:14px;transition:.25s; }
+    .btn-g:hover  { transform:translateY(-2px);box-shadow:0 10px 20px color-mix(in srgb,var(--accent) 30%,transparent); }
+    .btn-gh { background:transparent;border:2px solid color-mix(in srgb,var(--accent) 30%,transparent);color:var(--accent);font-weight:600;padding:11px 22px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:14px;transition:.25s; }
+    .btn-gh:hover { background:color-mix(in srgb,var(--accent) 8%,transparent); }
+    .btn-r  { background:linear-gradient(135deg,#ff4757,#e8363f);color:#fff;font-weight:700;padding:11px 22px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-size:14px;transition:.25s; }
+    .btn-r:hover  { transform:translateY(-2px);box-shadow:0 10px 20px rgba(255,71,87,.3); }
+
+    .toast { position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,#160b28,#270948);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:12px;padding:13px 20px;font-size:14px;z-index:9999;transform:translateY(90px);opacity:0;transition:.3s;max-width:300px; }
+    .toast.show { transform:translateY(0);opacity:1; }
+    .toast.err  { border-color:rgba(255,71,87,.5); }
+
+    #loadingOverlay { position:fixed;inset:0;background:rgba(10,5,16,.96);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s; }
+    #loadingOverlay.hide { opacity:0;pointer-events:none; }
+    .load-ring { width:56px;height:56px;border:3px solid color-mix(in srgb,var(--accent) 15%,transparent);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite; }
+    .load-txt  { font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:14px;letter-spacing:.1em; }
+
+    #saveIndicator { position:fixed;bottom:22px;left:22px;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#160b28,#270948);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:10px;padding:9px 15px;font-size:13px;color:rgba(255,255,255,.5);z-index:9998;opacity:0;transition:.3s;font-family:'JetBrains Mono',monospace; }
+    #saveIndicator.show { opacity:1; }
+    .save-dot { width:8px;height:8px;border-radius:50%;background:var(--accent); }
+    .save-dot.saving { background:#f0a500;animation:blink .6s ease-in-out infinite; }
+
+    /* Theme colour swatch buttons */
+    .swatch { width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.2s;flex-shrink:0; }
+    .swatch:hover,.swatch.active { border-color:#fff;transform:scale(1.2); }
+
+    ::-webkit-scrollbar { width:7px; }
+    ::-webkit-scrollbar-track { background:rgba(0,0,0,.2); }
+    ::-webkit-scrollbar-thumb { background:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:4px; }
+
+    @media(max-width:768px){
+      .tl-line,.tl-dot{display:none;}
+      .tl-item,.tl-item:nth-child(even){flex-direction:column;}
+      .tl-side{width:100%;margin:0!important;}
+      .hero-grid{grid-template-columns:1fr!important;}
+      .hero-right{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+  <div class="load-ring"></div>
+  <div class="load-txt">// Loading portfolio...</div>
+</div>
+
+<!-- Save Indicator -->
+<div id="saveIndicator">
+  <div class="save-dot" id="saveDot"></div>
+  <span id="saveText">Saved</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div style="display:flex;align-items:center;gap:11px;flex-shrink:0;">
+      <div class="cube anim-spin3d" style="width:26px;height:26px;">
+        <div class="cf fr" style="width:26px;height:26px;transform:translateZ(13px)"></div>
+        <div class="cf bk" style="width:26px;height:26px;transform:rotateY(180deg) translateZ(13px)"></div>
+        <div class="cf rt" style="width:26px;height:26px;transform:rotateY(90deg) translateZ(13px)"></div>
+        <div class="cf lt" style="width:26px;height:26px;transform:rotateY(-90deg) translateZ(13px)"></div>
+      </div>
+      <span id="navName" class="mono" style="color:var(--accent);font-size:16px;font-weight:600;"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap;">
+      <a href="#about"      class="nav-link">About</a>
+      <a href="#skills"     class="nav-link">Skills</a>
+      <a href="#projects"   class="nav-link">Projects</a>
+      <a href="#experience" class="nav-link">Experience</a>
+      <a href="#education"  class="nav-link">Education</a>
+      <a href="#contact"    class="nav-link">Contact</a>
+      <button class="nav-btn" id="adminBtn" onclick="handleAdmin()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Admin
+        <span class="abadge" id="abadge">ON</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page" style="padding-top:80px;">
+
+<!-- ABOUT -->
+<section id="about" class="sec" style="min-height:100vh;display:flex;align-items:center;">
+  <div class="hero-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;width:100%;position:relative;">
+    <div>
+      <div class="sec-label">// Hello World</div>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+        <h1 style="font-size:clamp(38px,7vw,70px);font-weight:800;line-height:1.1;">
+          <span id="hFirst" style="color:#fff;"></span><span id="hLast" style="color:var(--accent);"></span>
+        </h1>
+        <button class="hero-edit" id="nameEditBtn" onclick="openHeroModal()" style="margin-top:14px;">✏️ Edit Profile</button>
+      </div>
+      <h2 id="hTitle" style="font-size:clamp(17px,2.4vw,24px);color:rgba(255,255,255,.45);font-weight:300;margin-bottom:20px;"></h2>
+      <div style="background:linear-gradient(135deg,rgba(18,9,32,.92),rgba(30,12,50,.8));border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:14px;padding:20px;margin-bottom:26px;">
+        <p id="hBio" style="color:rgba(255,255,255,.58);line-height:1.78;font-size:15px;"></p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:13px;">
+        <a href="#projects" class="btn-prim">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          View Projects
+        </a>
+        <a href="#contact" class="btn-prim" style="border-color:color-mix(in srgb,var(--accent) 17%,transparent);color:color-mix(in srgb,var(--accent) 60%,transparent);">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Get In Touch
+        </a>
+      </div>
+    </div>
+    <div class="hero-right" style="display:flex;justify-content:center;">
+      <div class="anim-float" style="width:230px;height:230px;position:relative;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <div style="width:170px;height:170px;border-radius:50%;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,transparent),color-mix(in srgb,var(--accent) 4%,transparent));border:2px solid color-mix(in srgb,var(--accent) 28%,transparent);display:flex;align-items:center;justify-content:center;">
+            <svg width="82" height="82" fill="none" stroke="var(--accent)" stroke-width="1.4" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+        </div>
+        <div class="anim-orbit"     style="position:absolute;inset:0;"><div class="sphere" style="width:24px;height:24px;"></div></div>
+        <div class="anim-orbit-rev" style="position:absolute;inset:0;"><div class="ring"   style="width:20px;height:20px;"></div></div>
+      </div>
+    </div>
+    <div class="deco anim-float" style="top:15%;left:-40px;"><div class="sphere" style="width:44px;height:44px;"></div></div>
+    <div class="deco anim-pulse" style="bottom:8%;left:10%;"><div class="ring" style="width:38px;height:38px;"></div></div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="sec">
+  <div style="text-align:center;margin-bottom:48px;">
+    <div class="sec-label">// My Toolkit</div>
+    <h2 class="sec-title">Skills &amp; Technologies</h2>
+  </div>
+  <div id="skillsGrid" style="display:flex;flex-wrap:wrap;gap:11px;justify-content:center;"></div>
+  <div id="addSkillW" style="text-align:center;margin-top:28px;display:none;">
+    <button class="btn-gh" onclick="openAdd('skill')">+ Add Skill</button>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="sec">
+  <div style="text-align:center;margin-bottom:48px;">
+    <div class="sec-label">// Featured Work</div>
+    <h2 class="sec-title">Projects</h2>
+  </div>
+  <div id="projectsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px;"></div>
+  <div id="addProjectW" style="text-align:center;margin-top:28px;display:none;">
+    <button class="btn-gh" onclick="openAdd('project')">+ Add Project</button>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="sec">
+  <div style="text-align:center;margin-bottom:48px;">
+    <div class="sec-label">// Career Path</div>
+    <h2 class="sec-title">Experience</h2>
+  </div>
+  <div id="expList" class="tl-wrap"></div>
+  <div id="addExpW" style="text-align:center;margin-top:28px;display:none;">
+    <button class="btn-gh" onclick="openAdd('experience')">+ Add Experience</button>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="sec">
+  <div style="text-align:center;margin-bottom:48px;">
+    <div class="sec-label">// Academic Background</div>
+    <h2 class="sec-title">Education</h2>
+  </div>
+  <div id="eduGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:24px;"></div>
+  <div id="addEduW" style="text-align:center;margin-top:28px;display:none;">
+    <button class="btn-gh" onclick="openAdd('education')">+ Add Education</button>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="sec" style="text-align:center;">
+  <div class="sec-label">// Let's Connect</div>
+  <h2 class="sec-title" style="margin-bottom:14px;">Get In Touch</h2>
+  <p style="color:rgba(255,255,255,.47);margin:28px auto 42px;max-width:500px;line-height:1.72;font-size:15px;">Always open to discussing new projects, creative ideas, or opportunities to be part of your vision.</p>
+  <div id="contactGrid" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;"></div>
+  <div id="addContactW" style="text-align:center;margin-top:28px;display:none;">
+    <button class="btn-gh" onclick="openAdd('contact')">+ Add Contact</button>
+  </div>
+</section>
+
+<footer style="padding:26px 0 32px;border-top:1px solid rgba(255,255,255,.07);text-align:center;color:rgba(255,255,255,.28);font-size:13px;">
+  © <span id="fyear"></span> <span id="fname"></span>. Built with passion and code.
+</footer>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Password Modal -->
+<div class="modal-bg" id="pwModal">
+  <div class="modal-box">
+    <div class="m-title">🔒 Admin Access</div>
+    <p style="color:rgba(255,255,255,.48);margin-bottom:18px;font-size:14px;">Enter the admin password to enable editing.</p>
+    <input type="password" id="pwIn" class="f-input" placeholder="Password" style="margin-bottom:6px;"/>
+    <p id="pwErr" style="color:#ff4757;font-size:13px;margin-bottom:12px;display:none;">❌ Incorrect password.</p>
+    <div style="display:flex;gap:11px;margin-top:10px;">
+      <button class="btn-g"  style="flex:1;" onclick="checkPW()">Unlock</button>
+      <button class="btn-gh" style="flex:1;" onclick="closeM('pwModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hero Modal -->
+<div class="modal-bg" id="heroModal">
+  <div class="modal-box">
+    <div class="m-title">✏️ Edit Profile</div>
+    <div style="display:flex;flex-direction:column;gap:15px;">
+      <div><label class="f-label">First Name</label><input type="text" id="hf_first" class="f-input"/></div>
+      <div><label class="f-label">Last Name</label> <input type="text" id="hf_last"  class="f-input"/></div>
+      <div><label class="f-label">Job Title</label>  <input type="text" id="hf_title" class="f-input"/></div>
+      <div><label class="f-label">Bio</label>         <textarea id="hf_bio" class="f-input" rows="4"></textarea></div>
+    </div>
+    <div style="display:flex;gap:11px;margin-top:20px;">
+      <button class="btn-g"  style="flex:1;" onclick="saveHero()">Save Changes</button>
+      <button class="btn-gh" style="flex:1;" onclick="closeM('heroModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Modal (Admin only) -->
+<div class="modal-bg" id="themeModal">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="m-title">🎨 Theme Color</div>
+    <p style="color:rgba(255,255,255,.5);font-size:14px;margin-bottom:20px;">ஒரு color தேர்வு பண்ணு — full page automatically மாறும்.</p>
+
+    <!-- Presets -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+      <button class="swatch" style="background:#00ff88;" onclick="applyTheme('#00ff88')" title="Green (Default)"></button>
+      <button class="swatch" style="background:#38bdf8;" onclick="applyTheme('#38bdf8')" title="Sky Blue"></button>
+      <button class="swatch" style="background:#a78bfa;" onclick="applyTheme('#a78bfa')" title="Purple"></button>
+      <button class="swatch" style="background:#f472b6;" onclick="applyTheme('#f472b6')" title="Pink"></button>
+      <button class="swatch" style="background:#fb923c;" onclick="applyTheme('#fb923c')" title="Orange"></button>
+      <button class="swatch" style="background:#facc15;" onclick="applyTheme('#facc15')" title="Yellow"></button>
+      <button class="swatch" style="background:#f87171;" onclick="applyTheme('#f87171')" title="Red"></button>
+      <button class="swatch" style="background:#34d399;" onclick="applyTheme('#34d399')" title="Emerald"></button>
+      <button class="swatch" style="background:#60a5fa;" onclick="applyTheme('#60a5fa')" title="Blue"></button>
+      <button class="swatch" style="background:#e879f9;" onclick="applyTheme('#e879f9')" title="Fuchsia"></button>
+      <button class="swatch" style="background:#2dd4bf;" onclick="applyTheme('#2dd4bf')" title="Teal"></button>
+      <button class="swatch" style="background:#ffffff;" onclick="applyTheme('#ffffff')" title="White"></button>
+    </div>
+
+    <!-- Custom color picker -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
+      <label class="f-label" style="margin:0;white-space:nowrap;">Custom color:</label>
+      <input type="color" id="customColor" value="#00ff88" class="f-input" style="height:44px;width:80px;padding:4px;cursor:pointer;"/>
+      <button class="btn-gh" style="padding:9px 16px;" onclick="applyTheme(document.getElementById('customColor').value)">Apply</button>
+    </div>
+
+    <div style="display:flex;gap:11px;">
+      <button class="btn-g"  style="flex:1;" onclick="saveTheme()">Save & Close ☁️</button>
+      <button class="btn-gh" style="flex:1;" onclick="closeM('themeModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-bg" id="itemModal">
+  <div class="modal-box">
+    <div class="m-title" id="iTitle"></div>
+    <div id="iFields" style="display:flex;flex-direction:column;gap:15px;"></div>
+    <div style="display:flex;gap:11px;margin-top:20px;">
+      <button class="btn-g"  style="flex:1;" onclick="saveItem()">Save</button>
+      <button class="btn-gh" style="flex:1;" onclick="closeM('itemModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-bg" id="delModal">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="m-title" style="color:#ff4757;">🗑️ Delete Item</div>
+    <p style="color:rgba(255,255,255,.48);margin-bottom:22px;font-size:14px;">Are you sure? This cannot be undone.</p>
+    <div style="display:flex;gap:11px;">
+      <button class="btn-r"  style="flex:1;" onclick="doDelete()">Delete</button>
+      <button class="btn-gh" style="flex:1;" onclick="closeM('delModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   API — all calls go through Netlify Function (/.netlify/functions/api)
+   API key & password are NEVER in this file — they live in
+   Netlify → Environment Variables (server side only)
+══════════════════════════════════════════════════════════ */
+const API = '/.netlify/functions/api';
+
+// Admin session token — stored in memory only (not localStorage, not visible in source)
+let _token = null;
+
+async function apiGet(path){
+  const r = await fetch(API+path);
+  return r.json();
+}
+async function apiPost(path, body){
+  const r = await fetch(API+path, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+async function apiPut(path, body){
+  const r = await fetch(API+path, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Admin-Token': _token||''},
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+/* ══════════════════════════════════════════════════════════
+   DEFAULT DATA
+══════════════════════════════════════════════════════════ */
+const DEFAULT_DB = {
+  theme: '#00ff88',
+  profile: { first:'Alex', last:'Chen', title:'Full Stack Developer', bio:'Passionate about creating elegant solutions to complex problems. Specializing in modern web technologies and cloud architecture with 5+ years of professional experience.' },
+  skills:  [{id:1,name:'JavaScript',icon:'⚡'},{id:2,name:'React',icon:'⚛️'},{id:3,name:'Node.js',icon:'🟢'},{id:4,name:'Python',icon:'🐍'},{id:5,name:'TypeScript',icon:'📘'},{id:6,name:'AWS',icon:'☁️'},{id:7,name:'Docker',icon:'🐳'},{id:8,name:'PostgreSQL',icon:'🗄️'},{id:9,name:'GraphQL',icon:'🔗'},{id:10,name:'Git',icon:'📦'}],
+  projects:[{id:1,name:'E-Commerce Platform',desc:'Full-stack shopping platform with real-time inventory, payments, and admin dashboard.',tech:'React, Node.js, PostgreSQL',year:'2024',link:'#'},{id:2,name:'AI Chat Assistant',desc:'Intelligent chatbot with NLP capabilities, multi-language support, and analytics.',tech:'Python, FastAPI, OpenAI',year:'2023',link:'#'},{id:3,name:'DevOps Dashboard',desc:'Real-time monitoring dashboard for cloud infrastructure with alerting and metrics.',tech:'Vue.js, Go, Prometheus',year:'2023',link:'#'}],
+  experience:[{id:1,role:'Senior Full Stack Developer',company:'TechCorp Inc.',period:'2022 – Present',desc:'Led microservices architecture serving 1M+ users. Reduced API latency by 40%.'},{id:2,role:'Full Stack Developer',company:'StartupXYZ',period:'2020 – 2022',desc:'Built and shipped 3 major product features. Improved test coverage from 40% to 85%.'},{id:3,role:'Frontend Developer',company:'DigitalAgency',period:'2019 – 2020',desc:'Delivered responsive web apps for 10+ clients across e-commerce and fintech sectors.'}],
+  education:[{id:1,degree:'B.Sc. Computer Science',institution:'State University',period:'2015 – 2019',grade:'GPA 3.8/4.0'},{id:2,degree:'AWS Solutions Architect',institution:'Amazon Web Services',period:'2021',grade:'Certified'}],
+  contact:  [{id:1,label:'GitHub',icon:'🐙',url:'https://github.com'},{id:2,label:'LinkedIn',icon:'💼',url:'https://linkedin.com'},{id:3,label:'Email',icon:'📧',url:'mailto:alex@example.com'},{id:4,label:'Twitter',icon:'🐦',url:'https://twitter.com'}]
+};
+
+const FCFG = {
+  skill:      [{k:'name',label:'Skill Name',type:'text',ph:'e.g. Kubernetes'},{k:'icon',label:'Emoji',type:'text',ph:'🚀'}],
+  project:    [{k:'name',label:'Project Name',type:'text',ph:'My Awesome Project'},{k:'desc',label:'Description',type:'textarea',ph:'What does it do?'},{k:'tech',label:'Tech Stack',type:'text',ph:'React, Node.js'},{k:'year',label:'Year',type:'text',ph:'2024'},{k:'link',label:'Project URL',type:'text',ph:'https://...'}],
+  experience: [{k:'role',label:'Job Role',type:'text',ph:'Senior Developer'},{k:'company',label:'Company',type:'text',ph:'Company Name'},{k:'period',label:'Period',type:'text',ph:'2022 – Present'},{k:'desc',label:'Description',type:'textarea',ph:'What did you achieve?'}],
+  education:  [{k:'degree',label:'Degree / Certification',type:'text',ph:'B.Sc. Computer Science'},{k:'institution',label:'Institution',type:'text',ph:'University Name'},{k:'period',label:'Period',type:'text',ph:'2015 – 2019'},{k:'grade',label:'Grade / GPA (optional)',type:'text',ph:'3.8/4.0'}],
+  contact:    [{k:'label',label:'Label',type:'text',ph:'GitHub'},{k:'icon',label:'Emoji',type:'text',ph:'🐙'},{k:'url',label:'URL',type:'text',ph:'https://github.com/...'}]
+};
+
+function dkey(s){ return {skill:'skills',project:'projects',experience:'experience',education:'education',contact:'contact'}[s]; }
+function nextId(a){ return a.length ? Math.max(...a.map(x=>x.id))+1 : 1; }
+
+let DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+let isAdmin = false;
+let _dSec=null,_dId=null,_eSec=null,_eId=null;
+
+/* ── THEME ─────────────────────────────────────────── */
+function applyTheme(color){
+  document.documentElement.style.setProperty('--accent', color);
+  DB.theme = color;
+  // Update swatch active state
+  document.querySelectorAll('.swatch').forEach(s=>{
+    s.classList.toggle('active', s.style.background === color);
+  });
+  document.getElementById('customColor').value = color;
+}
+
+async function saveTheme(){
+  closeM('themeModal');
+  await persistDB();
+  toast('🎨 Theme saved!');
+}
+
+/* ── PERSIST ────────────────────────────────────────── */
+async function persistDB(){
+  showSave('saving');
+  const res = await apiPut('/data', DB);
+  if(res.ok){
+    showSave('saved');
+    if(res.newBinId) toast('☁️ First save! Add JSONBIN_BIN_ID='+res.newBinId+' to Netlify env vars then redeploy.',true);
+  } else {
+    showSave('error');
+    toast('❌ Save failed',true);
+  }
+}
+
+/* ── SAVE INDICATOR ─────────────────────────────────── */
+let _st=null;
+function showSave(state){
+  const el=document.getElementById('saveIndicator'),dot=document.getElementById('saveDot'),txt=document.getElementById('saveText');
+  clearTimeout(_st);
+  if(state==='saving'){ dot.className='save-dot saving'; txt.textContent='Saving...'; el.style.borderColor='rgba(240,165,0,.4)'; }
+  else if(state==='saved'){ dot.className='save-dot'; dot.style.background='var(--accent)'; txt.textContent='✓ Cloud saved'; el.style.borderColor='rgba(0,255,136,.3)'; }
+  else { dot.className='save-dot'; dot.style.background='#ff4757'; txt.textContent='✗ Failed'; el.style.borderColor='rgba(255,71,87,.4)'; }
+  el.classList.add('show');
+  _st=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+/* ── RENDER ─────────────────────────────────────────── */
+function renderAll(){ renderProfile();renderSkills();renderProjects();renderExperience();renderEducation();renderContact();syncAdmin(); }
+
+function renderProfile(){
+  const p=DB.profile;
+  document.getElementById('hFirst').textContent  = p.first;
+  document.getElementById('hLast').textContent   = ' '+p.last;
+  document.getElementById('hTitle').textContent  = p.title;
+  document.getElementById('hBio').textContent    = p.bio;
+  document.getElementById('navName').textContent = p.first+' '+p.last;
+  document.getElementById('fname').textContent   = p.first+' '+p.last;
+}
+
+function renderSkills(){
+  document.getElementById('skillsGrid').innerHTML=DB.skills.map(s=>`
+    <div class="skill-pill"><span>${s.icon}</span><span>${s.name}</span>
+    ${isAdmin?`<span class="sp-actions">
+      <button class="abtn e" onclick="openEdit('skill',${s.id})">✏️</button>
+      <button class="abtn d" onclick="askDel('skill',${s.id})">🗑️</button>
+    </span>`:''}</div>`).join('');
+}
+
+function renderProjects(){
+  document.getElementById('projectsGrid').innerHTML=DB.projects.map(p=>`
+    <div class="card">
+      ${isAdmin?`<div class="card-actions"><button class="abtn e" onclick="openEdit('project',${p.id})">✏️</button><button class="abtn d" onclick="askDel('project',${p.id})">🗑️</button></div>`:''}
+      <div class="card-body" style="${isAdmin?'padding-top:50px;':''}">
+        <div class="mono" style="color:var(--accent);font-size:12px;margin-bottom:10px;">${p.year||''}</div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">${p.name}</h3>
+        <p style="color:rgba(255,255,255,.54);font-size:14px;line-height:1.65;margin-bottom:14px;">${p.desc}</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <span class="mono" style="font-size:12px;color:color-mix(in srgb,var(--accent) 60%,transparent);">${p.tech}</span>
+          ${p.link&&p.link!=='#'?`<a href="${p.link}" target="_blank" style="color:var(--accent);font-size:13px;text-decoration:none;">View →</a>`:''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderExperience(){
+  const list=document.getElementById('expList');
+  list.innerHTML='<div class="tl-line"></div>';
+  DB.experience.forEach((exp,i)=>{
+    const d=document.createElement('div'); d.className='tl-item';
+    d.innerHTML=`
+      <div class="tl-side" style="${i%2===0?'margin-right:auto;padding-right:30px;':'margin-left:auto;padding-left:30px;'}">
+        <div class="card">
+          ${isAdmin?`<div class="card-actions"><button class="abtn e" onclick="openEdit('experience',${exp.id})">✏️</button><button class="abtn d" onclick="askDel('experience',${exp.id})">🗑️</button></div>`:''}
+          <div class="card-body" style="${isAdmin?'padding-top:50px;':''}">
+            <div class="mono" style="color:var(--accent);font-size:12px;margin-bottom:6px;">${exp.period}</div>
+            <h3 style="font-size:17px;font-weight:700;margin-bottom:4px;">${exp.role}</h3>
+            <p style="color:var(--accent);font-size:14px;margin-bottom:10px;">${exp.company}</p>
+            <p style="color:rgba(255,255,255,.54);font-size:14px;line-height:1.65;">${exp.desc}</p>
+          </div>
+        </div>
+      </div><div class="tl-dot"></div>`;
+    list.appendChild(d);
+  });
+}
+
+function renderEducation(){
+  document.getElementById('eduGrid').innerHTML=DB.education.map(e=>`
+    <div class="card">
+      ${isAdmin?`<div class="card-actions"><button class="abtn e" onclick="openEdit('education',${e.id})">✏️</button><button class="abtn d" onclick="askDel('education',${e.id})">🗑️</button></div>`:''}
+      <div class="card-body" style="${isAdmin?'padding-top:50px;':''}">
+        <div style="font-size:30px;margin-bottom:14px;">🎓</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:4px;">${e.degree}</h3>
+        <p style="color:var(--accent);font-size:14px;margin-bottom:8px;">${e.institution}</p>
+        <p class="mono" style="color:rgba(255,255,255,.38);font-size:12px;">${e.period}${e.grade?' · '+e.grade:''}</p>
+      </div>
+    </div>`).join('');
+}
+
+function renderContact(){
+  document.getElementById('contactGrid').innerHTML=DB.contact.map(c=>`
+    <div class="c-wrap">
+      <a href="${c.url}" target="_blank" class="c-link"><span style="font-size:20px;">${c.icon}</span><span>${c.label}</span></a>
+      ${isAdmin?`<div class="c-actions"><button class="abtn e" onclick="event.preventDefault();openEdit('contact',${c.id})">✏️</button><button class="abtn d" onclick="event.preventDefault();askDel('contact',${c.id})">🗑️</button></div>`:''}
+    </div>`).join('');
+}
+
+function syncAdmin(){
+  ['addSkillW','addProjectW','addExpW','addEduW','addContactW','abadge'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display=isAdmin?'block':'none';
+  });
+  document.querySelectorAll('.hero-edit').forEach(b=>b.style.display=isAdmin?'inline-block':'none');
+  document.getElementById('adminBtn').classList.toggle('on',isAdmin);
+
+  // Show theme button in nav when admin
+  const tBtn=document.getElementById('themeNavBtn');
+  if(tBtn) tBtn.style.display=isAdmin?'inline-flex':'none';
+}
+
+/* ── ADMIN ──────────────────────────────────────────── */
+function handleAdmin(){
+  if(isAdmin){ isAdmin=false; _token=null; renderAll(); toast('Admin mode off'); }
+  else {
+    document.getElementById('pwIn').value='';
+    document.getElementById('pwErr').style.display='none';
+    openM('pwModal');
+    setTimeout(()=>document.getElementById('pwIn').focus(),120);
+  }
+}
+
+document.getElementById('pwIn').addEventListener('keydown',e=>{ if(e.key==='Enter') checkPW(); });
+
+async function checkPW(){
+  const pw = document.getElementById('pwIn').value;
+  // Password check via Netlify Function — never touches client code
+  const res = await apiPost('/auth', { password: pw });
+  if(res.ok){
+    _token = pw; // store in memory only — no localStorage, no source code
+    isAdmin=true; closeM('pwModal'); renderAll();
+    toast('✅ Admin ON');
+  } else {
+    document.getElementById('pwErr').style.display='block';
+  }
+}
+
+/* ── HERO MODAL ─────────────────────────────────────── */
+function openHeroModal(){
+  document.getElementById('hf_first').value=DB.profile.first;
+  document.getElementById('hf_last').value =DB.profile.last;
+  document.getElementById('hf_title').value=DB.profile.title;
+  document.getElementById('hf_bio').value  =DB.profile.bio;
+  openM('heroModal');
+}
+async function saveHero(){
+  const v=s=>document.getElementById(s).value.trim();
+  if(v('hf_first')) DB.profile.first=v('hf_first');
+  if(v('hf_last'))  DB.profile.last =v('hf_last');
+  if(v('hf_title')) DB.profile.title=v('hf_title');
+  if(v('hf_bio'))   DB.profile.bio  =v('hf_bio');
+  closeM('heroModal'); renderProfile();
+  await persistDB(); toast('✅ Profile saved!');
+}
+
+/* ── ADD / EDIT ─────────────────────────────────────── */
+function openAdd(sec){ _eSec=sec;_eId=null; document.getElementById('iTitle').textContent='+ Add '+cap(sec); buildFields(sec,{}); openM('itemModal'); }
+function openEdit(sec,id){
+  _eSec=sec;_eId=id;
+  const item=DB[dkey(sec)].find(x=>Number(x.id)===Number(id));
+  if(!item){ toast('Not found',true); return; }
+  document.getElementById('iTitle').textContent='✏️ Edit '+cap(sec);
+  buildFields(sec,item); openM('itemModal');
+}
+function buildFields(sec,vals){
+  document.getElementById('iFields').innerHTML=FCFG[sec].map(f=>`
+    <div><label class="f-label">${f.label}</label>
+    ${f.type==='textarea'
+      ?`<textarea id="mf_${f.k}" class="f-input" rows="3" placeholder="${f.ph}">${vals[f.k]||''}</textarea>`
+      :`<input type="text" id="mf_${f.k}" class="f-input" placeholder="${f.ph}" value="${esc(vals[f.k]||'')}"/>`}
+    </div>`).join('');
+}
+async function saveItem(){
+  const sec=_eSec,k=dkey(sec),vals={};
+  FCFG[sec].forEach(f=>{ const el=document.getElementById('mf_'+f.k); vals[f.k]=el?el.value.trim():''; });
+  if(_eId!==null){
+    const idx=DB[k].findIndex(x=>Number(x.id)===Number(_eId));
+    if(idx===-1){ toast('Not found',true); return; }
+    DB[k][idx]={...DB[k][idx],...vals};
+  } else {
+    DB[k].push({id:nextId(DB[k]),...vals});
+  }
+  closeM('itemModal'); renderAll();
+  await persistDB(); toast('✅ Saved!');
+}
+
+/* ── DELETE ─────────────────────────────────────────── */
+function askDel(sec,id){ _dSec=sec;_dId=id; openM('delModal'); }
+async function doDelete(){
+  DB[dkey(_dSec)]=DB[dkey(_dSec)].filter(x=>Number(x.id)!==Number(_dId));
+  closeM('delModal'); renderAll();
+  await persistDB(); toast('🗑️ Deleted!');
+}
+
+/* ── MODALS ─────────────────────────────────────────── */
+function openM(id){ document.getElementById(id).classList.add('open'); }
+function closeM(id){ document.getElementById(id).classList.remove('open'); }
+['pwModal','heroModal','themeModal','itemModal','delModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) closeM(id); });
+});
+
+/* ── TOAST ──────────────────────────────────────────── */
+function toast(msg,isErr=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(isErr?' err':'');
+  setTimeout(()=>{ t.className='toast'; },3500);
+}
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── BOOT ───────────────────────────────────────────── */
+document.getElementById('fyear').textContent = new Date().getFullYear();
+
+// Add Theme button to nav dynamically (hidden until admin login)
+(function(){
+  const nav = document.querySelector('nav .nav-btn').parentElement;
+  const btn = document.createElement('button');
+  btn.id='themeNavBtn';
+  btn.className='nav-btn';
+  btn.style.display='none';
+  btn.innerHTML='🎨 <span class="hidden sm:inline">Theme</span>';
+  btn.onclick=()=>openM('themeModal');
+  nav.insertBefore(btn, document.getElementById('adminBtn'));
+})();
+
+async function boot(){
+  const overlay=document.getElementById('loadingOverlay');
+  try {
+    const res = await apiGet('/data');
+    if(res.exists && res.data){
+      DB = { ...DEFAULT_DB, ...res.data };
+      overlay.querySelector('.load-txt').textContent='// Data loaded ✓';
+    } else {
+      overlay.querySelector('.load-txt').textContent='// Using defaults';
+    }
+  } catch(e){
+    overlay.querySelector('.load-txt').textContent='// Offline mode';
+  }
+
+  // Apply saved theme
+  if(DB.theme) applyTheme(DB.theme);
+
+  setTimeout(()=>{
+    overlay.classList.add('hide');
+    setTimeout(()=>overlay.style.display='none',500);
+  }, 700);
+
+  renderAll();
+}
+
+boot();
+</script>
+</body>
+</html>
